@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}Início{% endblock %}
+{% block content %}
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Dashboard de Atendimentos</h1>
+            <p>Bem-vindo, <span class="font-medium text-primary-600">{{ current_user.nome }}</span></p>
+        </div>
+        <div class="bg-primary-50 text-primary-700 px-4 py-2 rounded-lg font-medium">
+            {{ current_user.tipo|title }}
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div
+        class="group bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300">
+        <div class="p-6">
+            <div
+                class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <svg class="w-6 h-6 text-blue-600" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900 mb-2">Novo Atendimento</h2>
+            <p>Registre e acompanhe novos atendimentos no sistema.</p>
+            <a href="{{ url_for('atendimentos.novo_atendimento') }}"
+                class="block text-center bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-300">Criar
+                Atendimento</a>
+        </div>
+    </div>
+
+    <div
+        class="group bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300">
+        <div class="p-6">
+            <div
+                class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <svg class="w-6 h-6 text-green-600" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900 mb-2">Importar Planilha</h2>
+            <p>Importe dados de atendimentos em lote via planilha Excel.</p>
+            <a href="{{ url_for('atendimentos.importar') }}"
+                class="block text-center bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-300">Importar
+                Dados</a>
+        </div>
+    </div>
+
+    <div
+        class="group bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300">
+        <div class="p-6">
+            <div
+                class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <svg class="w-6 h-6 text-purple-600" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900 mb-2">Listar Atendimentos</h2>
+            <p>Visualize e gerencie todos os atendimentos registrados.</p>
+            <a href="{{ url_for('atendimentos.listar') }}"
+                class="block text-center bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-300">Ver
+                Atendimentos</a>
+        </div>
+    </div>
+
+    <div
+        class="group bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300">
+        <div class="p-6">
+            <div
+                class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <svg class="w-6 h-6 text-orange-600" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900 mb-2">Atividades Externas</h2>
+            <p>Registre atividades realizadas em outros setores.</p>
+            <a href="{{ url_for('atividades.nova_atividade') }}"
+                class="block text-center bg-orange-600 hover:bg-orange-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-300">Registrar
+                Atividade</a>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <h2 class="text-xl font-bold text-gray-900 mb-6">Níveis de Atendimento</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Nível 1 -->
+        <div class="group p-6 border border-gray-200 rounded-xl hover:border-blue-500 transition-colors duration-300">
+            <div class="flex items-center mb-4">
+                <div
+                    class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
+                    <span class="text-blue-600 font-bold">1</span>
+                </div>
+                <h3 class="font-semibold text-gray-900">Nível 1</h3>
+            </div>
+            <p class="text-gray-600 text-sm">Atendimentos comuns, incluindo mensagens e ligações para suporte básico.
+            </p>
+            <ul class="mt-4 space-y-2 text-sm text-gray-600">
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Acesso ao sistema
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Dúvidas sobre lançamentos
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Relatórios básicos
+                </li>
+            </ul>
+        </div>
+
+        <!-- Nível 2 -->
+        <div class="group p-6 border border-gray-200 rounded-xl hover:border-green-500 transition-colors duration-300">
+            <div class="flex items-center mb-4">
+                <div
+                    class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
+                    <span class="text-green-600 font-bold">2</span>
+                </div>
+                <h3 class="font-semibold text-gray-900">Nível 2</h3>
+            </div>
+            <p class="text-gray-600 text-sm">Demandas que envolvam resolução mais complexa e acesso ao banco de dados.
+            </p>
+            <ul class="mt-4 space-y-2 text-sm text-gray-600">
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Alterações em diários
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Modificações em turmas
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Correções avançadas
+                </li>
+            </ul>
+        </div>
+
+        <!-- Nível 3 -->
+        <div class="group p-6 border border-gray-200 rounded-xl hover:border-purple-500 transition-colors duration-300">
+            <div class="flex items-center mb-4">
+                <div
+                    class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
+                    <span class="text-purple-600 font-bold">3</span>
+                </div>
+                <h3 class="font-semibold text-gray-900">Nível 3</h3>
+            </div>
+            <p class="text-gray-600 text-sm">Situações que necessitem de intervenção especial da equipe de
+                desenvolvimento.</p>
+            <ul class="mt-4 space-y-2 text-sm text-gray-600">
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Atualizações do sistema
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Reuniões e capacitações
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Suporte especializado
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

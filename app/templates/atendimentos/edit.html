@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}Editar Atendimento{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Cabeçalho -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Editar Atendimento</h1>
+                <p class="text-gray-600">Protocolo: {{ atendimento.protocolo }}</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('atendimentos.listar') }}"
+                    class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium">
+                    Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulário -->
+    <form method="POST" class="bg-white rounded-lg shadow-sm border border-gray-200 p-8 space-y-8">
+        <!-- Primeira Linha -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Atendente Responsável -->
+            <div>
+                <label for="atendente_responsavel" class="block text-sm font-medium text-gray-700">
+                    Atendente Responsável <span class="text-red-500">*</span>
+                </label>
+                <select id="atendente_responsavel" name="atendente_responsavel" required
+                    class="block w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-100 appearance-none">
+                    <option value="" disabled>Selecione o atendente</option>
+                    <option value="Amilton" {% if atendimento.atendente_responsavel=='Amilton' %}selected{% endif %}>
+                        Amilton</option>
+                    <option value="Wesley" {% if atendimento.atendente_responsavel=='Wesley' %}selected{% endif %}>
+                        Wesley</option>
+                    <option value="Zaninha" {% if atendimento.atendente_responsavel=='Zaninha' %}selected{% endif %}>
+                        Zaninha</option>
+                    <option value="Tifany" {% if atendimento.atendente_responsavel=='Tifany' %}selected{% endif %}>
+                        Tifany</option>
+                    <option value="Thiago" {% if atendimento.atendente_responsavel=='Thiago' %}selected{% endif %}>
+                        Thiago</option>
+                    <option value="Iana" {% if atendimento.atendente_responsavel=='Iana' %}selected{% endif %}>Iana
+                    </option>
+                    <option value="Letícia" {% if atendimento.atendente_responsavel=='Letícia' %}selected{% endif %}>
+                        Letícia</option>
+                    <option value="Talita" {% if atendimento.atendente_responsavel=='Talita' %}selected{% endif %}>
+                        Talita</option>
+                    <option value="Yasmin" {% if atendimento.atendente_responsavel=='Yasmin' %}selected{% endif %}>
+                        Yasmin</option>
+                </select>
+            </div>
+
+            <!-- Origem -->
+            <div>
+                <label for="origem" class="block text-sm font-medium text-gray-700">
+                    Origem <span class="text-red-500">*</span>
+                </label>
+                <select id="origem" name="origem" required
+                    class="block w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-100 appearance-none">
+                    <option value="" disabled>Selecione a origem</option>
+                    <option value="WHATSAPP" {% if atendimento.origem=='WHATSAPP' %}selected{% endif %}>WhatsApp
+                    </option>
+                    <option value="EMAIL" {% if atendimento.origem=='EMAIL' %}selected{% endif %}>E-mail</option>
+                    <option value="TELEFONE" {% if atendimento.origem=='TELEFONE' %}selected{% endif %}>Telefone
+                    </option>
+                    <option value="PRESENCIAL" {% if atendimento.origem=='PRESENCIAL' %}selected{% endif %}>Presencial
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Segunda Linha -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Protocolo -->
+            <div>
+                <label for="protocolo" class="block text-sm font-medium text-gray-700">
+                    Protocolo <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="protocolo" name="protocolo" required value="{{ atendimento.protocolo }}"
+                    class="block w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-100">
+            </div>
+
+            <!-- Departamento -->
+            <div>
+                <label for="departamento" class="block text-sm font-medium text-gray-700">
+                    Departamento <span class="text-red-500">*</span>
+                </label>
+                <select id="departamento" name="departamento" required
+                    class="block w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-100 appearance-none">
+                    <option value="" disabled>Selecione o departamento</option>
+                    <option value="Secretaria" {% if atendimento.departamento=='Secretaria' %}selected{% endif %}>
+                        Secretaria</option>
+                    <option value="Supervisão" {% if atendimento.departamento=='Supervisão' %}selected{% endif %}>
+                        Supervisão</option>
+                    <option value="Direção" {% if atendimento.departamento=='Direção' %}selected{% endif %}>Direção
+                    </option>
+                    <option value="Outro" {% if atendimento.departamento=='Outro' %}selected{% endif %}>Outro</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Terceira Linha -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Nível -->
+            <div>
+                <label for="nivel" class="block text-sm font-medium text-gray-700">
+                    Nível de Atendimento <span class="text-red-500">*</span>
+                </label>
+                <select id="nivel" name="nivel" required
+                    class="block w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-100 appearance-none">
+                    <option value="" disabled>Selecione o nível</option>
+                    <option value="1" {% if atendimento.nivel==1 %}selected{% endif %}>Nível 1 - Atendimento Básico
+                    </option>
+                    <option value="2" {% if atendimento.nivel==2 %}selected{% endif %}>Nível 2 - Atendimento Avançado
+                    </option>
+                    <option value="3" {% if atendimento.nivel==3 %}selected{% endif %}>Nível 3 - Suporte Especializado
+                    </option>
+                </select>
+            </div>
+
+            <!-- Suporte Adicional -->
+            <div id="suporte_adicional_container" {% if atendimento.nivel !=3 %}style="display: none;" {% endif %}>
+                <label for="suporte_adicional" class="block text-sm font-medium text-gray-700">
+                    Suporte Adicional <span class="text-red-500">*</span>
+                </label>
+                <select id="suporte_adicional" name="suporte_adicional" {% if atendimento.nivel==3 %}required{% endif %}
+                    class="block w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-100 appearance-none">
+                    <option value="" disabled {% if not atendimento.suporte_adicional %}selected{% endif %}>Selecione o
+                        suporte</option>
+                    <option value="Vinícius" {% if atendimento.suporte_adicional=='Vinícius' %}selected{% endif %}>
+                        Vinícius</option>
+                    <option value="Vivian" {% if atendimento.suporte_adicional=='Vivian' %}selected{% endif %}>Vivian
+                    </option>
+                    <option value="Deusdete" {% if atendimento.suporte_adicional=='Deusdete' %}selected{% endif %}>
+                        Deusdete</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Quarta Linha -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Nome do Cliente -->
+            <div>
+                <label for="nome_cliente" class="block text-sm font-medium text-gray-700">
+                    Nome do Cliente <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="nome_cliente" name="nome_cliente" required value="{{ atendimento.nome_cliente }}"
+                    class="block w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-100">
+            </div>
+
+            <!-- Número -->
+            <div>
+                <label for="numero" class="block text-sm font-medium text-gray-700">
+                    Número de Contato
+                </label>
+                <input type="text" id="numero" name="numero" value="{{ atendimento.numero }}"
+                    class="block w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-100">
+            </div>
+        </div>
+
+        <!-- Motivo -->
+        <div>
+            <label for="motivo" class="block text-sm font-medium text-gray-700">
+                Motivo do Atendimento <span class="text-red-500">*</span>
+            </label>
+            <textarea id="motivo" name="motivo" rows="4" required
+                class="block w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-100 resize-none">{{ atendimento.motivo }}</textarea>
+        </div>
+
+        <!-- Botões -->
+        <div class="flex justify-end space-x-4 pt-4">
+            <a href="{{ url_for('atendimentos.listar') }}"
+                class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium">
+                Cancelar
+            </a>
+            <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+                Salvar Alterações
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Script para controle do campo de suporte adicional -->
+<script>
+    document.getElementById('nivel').addEventListener('change', function () {
+        const suporteContainer = document.getElementById('suporte_adicional_container');
+        const suporteSelect = document.getElementById('suporte_adicional');
+
+        if (this.value === '3') {
+            suporteContainer.style.display = 'block';
+            suporteSelect.required = true;
+        } else {
+            suporteContainer.style.display = 'none';
+            suporteSelect.required = false;
+            suporteSelect.value = '';
+        }
+    });
+</script>
+{% endblock %}

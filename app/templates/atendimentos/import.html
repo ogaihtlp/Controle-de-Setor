@@ -1,0 +1,475 @@
+{% extends "base.html" %}
+{% block title %}Importar Atendimentos{% endblock %}
+
+{% block extra_css %}
+<style>
+    .drag-active {
+        border-color: #4F46E5;
+        background-color: #EEF2FF;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .shake {
+        animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
+    }
+
+    @keyframes shake {
+
+        10%,
+        90% {
+            transform: translate3d(-1px, 0, 0);
+        }
+
+        20%,
+        80% {
+            transform: translate3d(2px, 0, 0);
+        }
+
+        30%,
+        50%,
+        70% {
+            transform: translate3d(-4px, 0, 0);
+        }
+
+        40%,
+        60% {
+            transform: translate3d(4px, 0, 0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Importar Atendimentos</h1>
+                <p class="text-sm text-gray-600">Selecione uma planilha Excel (.xlsx ou .xls) para importar os
+                    atendimentos</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('index') }}"
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Form -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <form id="uploadForm" class="space-y-6">
+            <!-- Área de Upload -->
+            <div id="dropZone"
+                class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md transition-all duration-200 ease-in-out">
+                <div class="space-y-1 text-center">
+                    <!-- Ícone de Upload -->
+                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                        <path
+                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+
+                    <!-- Área de seleção de arquivo -->
+                    <div class="flex text-sm text-gray-600 justify-center">
+                        <label for="file-upload"
+                            class="relative cursor-pointer rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none">
+                            <span>Selecione um arquivo</span>
+                            <input id="file-upload" name="file" type="file" class="sr-only" accept=".xlsx,.xls">
+                        </label>
+                        <p class="pl-1">ou arraste e solte</p>
+                    </div>
+
+                    <!-- Informações sobre arquivo -->
+                    <div id="fileInfo" class="hidden mt-2">
+                        <p class="text-sm text-gray-500">
+                            Arquivo selecionado: <span id="fileName" class="font-medium"></span>
+                        </p>
+                    </div>
+
+                    <p class="text-xs text-gray-500">Excel (.xlsx, .xls)</p>
+                </div>
+            </div>
+
+            <!-- Progress Bar (inicialmente oculta) -->
+            <div id="progressContainer" class="hidden fade-in">
+                <div class="mb-2 flex justify-between">
+                    <span id="progressStatus" class="text-sm font-medium text-gray-700">Preparando importação...</span>
+                    <span id="progressPercentage" class="text-sm font-medium text-gray-700">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                    <div id="progressBar"
+                        class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300 ease-in-out"
+                        style="width: 0%">
+                    </div>
+                </div>
+                <p id="progressText" class="text-sm text-gray-600"></p>
+            </div>
+
+            <!-- Resultados da Importação -->
+            <div id="results" class="hidden fade-in">
+                <div class="rounded-md p-4">
+                    <!-- Sumário -->
+                    <div id="summary" class="mb-4">
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Resumo da Importação</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <p class="text-sm text-gray-500">Total de Registros</p>
+                                <p id="totalRecords" class="text-2xl font-bold text-gray-900">0</p>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <p class="text-sm text-green-600">Importados com Sucesso</p>
+                                <p id="successRecords" class="text-2xl font-bold text-green-600">0</p>
+                            </div>
+                            <div class="bg-red-50 p-4 rounded-lg">
+                                <p class="text-sm text-red-600">Erros Encontrados</p>
+                                <p id="errorRecords" class="text-2xl font-bold text-red-600">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mensagens de Sucesso -->
+                    <div id="successMessage" class="mb-4 p-4 bg-green-50 rounded-md hidden">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-green-800"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Erros -->
+                    <div id="errorList" class="hidden">
+                        <h4 class="text-md font-medium text-gray-900 mb-2">Detalhes dos Erros</h4>
+                        <div class="bg-white shadow overflow-hidden sm:rounded-md">
+                            <ul class="divide-y divide-gray-200" role="list"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botões de Ação -->
+            <div class="flex justify-end space-x-4">
+                <button type="button" id="resetButton"
+                    class="hidden inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Limpar
+                </button>
+                <button type="submit" id="submitButton" disabled
+                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Importar Dados
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Instruções -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h2 class="text-lg font-medium text-gray-900 mb-4">Instruções de Importação</h2>
+        <div class="prose prose-sm text-gray-500">
+            <ul>
+                <li>O arquivo deve estar no formato Excel (.xlsx ou .xls)</li>
+
+                </li>
+                <li>Formatação dos dados:
+                    <ul>
+                        <li>Datas devem estar no formato DD/MM/YYYY HH:MM</li>
+                        <li>O nível deve ser especificado como "Nivel 1", "Nivel 2" ou "Nivel 3"</li>
+                        <li>Campos de texto não devem conter caracteres especiais</li>
+                        <li>O protocolo deve ser único para cada atendimento</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript para manipulação do upload -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('uploadForm');
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('file-upload');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const submitButton = document.getElementById('submitButton');
+        const resetButton = document.getElementById('resetButton');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const progressPercentage = document.getElementById('progressPercentage');
+        const progressStatus = document.getElementById('progressStatus');
+        const results = document.getElementById('results');
+        const successMessage = document.getElementById('successMessage');
+        const errorList = document.getElementById('errorList');
+
+        // Previne o comportamento padrão de drag and drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Highlight drop zone quando item é arrastado sobre
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('drag-active');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('drag-active');
+        }
+
+        // Handle arquivo solto
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const file = dt.files[0];
+            handleFile(file);
+        }
+
+        // Handle seleção de arquivo via input
+        fileInput.addEventListener('change', function (e) {
+            handleFile(this.files[0]);
+        });
+
+        function handleFile(file) {
+            if (file) {
+                // Verifica extensão
+                const validExtensions = ['.xlsx', '.xls'];
+                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+
+                if (!validExtensions.includes(fileExtension)) {
+                    showError('Formato de arquivo inválido. Por favor, selecione um arquivo Excel (.xlsx ou .xls)');
+                    resetFile();
+                    return;
+                }
+
+                // Atualiza UI
+                fileName.textContent = file.name;
+                fileInfo.classList.remove('hidden');
+                submitButton.disabled = false;
+                resetButton.classList.remove('hidden');
+            }
+        }
+
+        // Reset do formulário
+        resetButton.addEventListener('click', function () {
+            resetFile();
+            resetUI();
+        });
+
+        function resetFile() {
+            fileInput.value = '';
+            fileName.textContent = '';
+            fileInfo.classList.add('hidden');
+            submitButton.disabled = true;
+            resetButton.classList.add('hidden');
+        }
+
+        function resetUI() {
+            progressContainer.classList.add('hidden');
+            results.classList.add('hidden');
+            progressBar.style.width = '0%';
+            progressText.textContent = '';
+            progressPercentage.textContent = '0%';
+            progressStatus.textContent = 'Preparando importação...';
+            successMessage.classList.add('hidden');
+            errorList.classList.add('hidden');
+
+            // Remove mensagens de erro anteriores
+            const previousErrors = document.querySelectorAll('.error-message');
+            previousErrors.forEach(error => error.remove());
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message bg-red-50 p-4 rounded-md shake mb-4';
+            errorDiv.innerHTML = `
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-red-800">${message}</p>
+                </div>
+            </div>
+        `;
+
+            // Remove erro anterior se existir
+            const previousError = document.querySelector('.error-message');
+            if (previousError) {
+                previousError.remove();
+            }
+
+            form.insertBefore(errorDiv, form.firstChild);
+
+            // Remove mensagem após 5 segundos
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        // Handle form submission
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData();
+            const file = fileInput.files[0];
+
+            if (!file) {
+                showError('Por favor, selecione um arquivo.');
+                return;
+            }
+
+            formData.append('file', file);
+
+            // Reset e mostra área de progresso
+            resetUI();
+            progressContainer.classList.remove('hidden');
+            submitButton.disabled = true;
+
+            try {
+                const response = await fetch('/importar', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Verifica o tipo de conteúdo da resposta
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    // Se a resposta não for JSON, pode ser um erro de autenticação ou sessão expirada
+                    if (response.status === 401 || response.status === 403) {
+                        throw new Error("Sua sessão expirou. Por favor, faça login novamente.");
+                    }
+
+                    // Para outros casos, tenta ler o texto da resposta para mais detalhes
+                    const text = await response.text();
+                    console.error('Resposta não-JSON recebida:', text);
+                    throw new Error("Erro no servidor. Por favor, tente novamente ou contate o suporte.");
+                }
+
+                const data = await response.json();
+
+                // Atualiza progresso para 100%
+                progressBar.style.width = '100%';
+                progressPercentage.textContent = '100%';
+                results.classList.remove('hidden');
+
+                // Atualiza sumário
+                document.getElementById('totalRecords').textContent = data.details?.total || 0;
+                document.getElementById('successRecords').textContent = data.details?.success || 0;
+                document.getElementById('errorRecords').textContent = data.details?.errors?.length || 0;
+
+                if (!data.success) {
+                    progressStatus.textContent = 'Erro na importação';
+                    progressText.textContent = data.message;
+
+                    // Mostra detalhes do erro
+                    const errorDetails = document.createElement('div');
+                    errorDetails.className = 'mt-4 p-4 bg-red-50 rounded-md';
+                    errorDetails.innerHTML = `
+                    <h4 class="text-sm font-medium text-red-800">Detalhes do Erro:</h4>
+                    <p class="mt-1 text-sm text-red-700">${data.error_details || data.message || 'Nenhum detalhe disponível'}</p>
+                `;
+
+                    // Se houver erros específicos por linha
+                    if (data.details?.errors?.length > 0) {
+                        const errorList = document.createElement('div');
+                        errorList.className = 'mt-2';
+                        errorList.innerHTML = `
+                        <h5 class="text-sm font-medium text-red-800">Erros por linha:</h5>
+                        <ul class="mt-1 list-disc list-inside text-sm text-red-700">
+                            ${data.details.errors.map(error => `
+                                <li>Linha ${error.row}: ${error.errors.join(', ')}</li>
+                            `).join('')}
+                        </ul>
+                    `;
+                        errorDetails.appendChild(errorList);
+                    }
+
+                    results.appendChild(errorDetails);
+                    showError(data.message);
+                } else {
+                    progressStatus.textContent = 'Importação concluída!';
+                    progressText.textContent = 'Todos os registros foram processados';
+
+                    // Mostra mensagem de sucesso
+                    successMessage.classList.remove('hidden');
+                    successMessage.querySelector('p').textContent = data.message;
+
+                    // Mostra erros se houver
+                    if (data.details?.errors?.length > 0) {
+                        errorList.classList.remove('hidden');
+                        const errorListUl = errorList.querySelector('ul');
+                        errorListUl.innerHTML = data.details.errors.map(error => `
+                        <li class="hover:bg-gray-50">
+                            <div class="px-4 py-4 flex items-center sm:px-6">
+                                <div class="min-w-0 flex-1 sm:flex sm:items-center sm:justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-red-600">
+                                            Linha ${error.row}
+                                        </p>
+                                        <p class="mt-1 text-sm text-gray-500">
+                                            ${error.errors.join(', ')}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    `).join('');
+                    }
+                }
+            } catch (error) {
+                progressStatus.textContent = 'Erro na importação';
+                progressText.textContent = 'Ocorreu um erro ao processar o arquivo';
+
+                // Mensagem de erro mais específica
+                let errorMessage = error.message;
+                if (errorMessage.includes('Unexpected token')) {
+                    errorMessage = 'Erro de comunicação com o servidor. Verifique sua conexão e tente novamente.';
+                }
+
+                showError(errorMessage);
+                console.error('Erro detalhado:', error);
+            } finally {
+                submitButton.disabled = false;
+            }
+        });
+    });
+</script>
+{% endblock %}

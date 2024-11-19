@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mx-auto px-4">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">Registrar Atividade Externa</h1>
+            <a href="{{ url_for('index') }}"
+                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">Voltar</a>
+        </div>
+
+        <!-- Formulário de Cadastro -->
+        <form method="POST" class="space-y-6">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700">Atendente</label>
+                    <select name="atendente_id"
+                        class="block w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-100 appearance-none">
+                        required>
+                        <option value="" disabled selected>Selecione o atendente</option>
+                        <option value="Amilton">Amilton</option>
+                        <option value="Wesley">Wesley</option>
+                        <option value="Zaninha">Zaninha</option>
+                        <option value="Tifany">Tifany</option>
+                        <option value="Thiago">Thiago</option>
+                        <option value="Iana">Iana</option>
+                        <option value="Letícia">Letícia</option>
+                        <option value="Talita">Talita</option>
+                        <option value="Yasmin">Yasmin</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700">Setor</label>
+                    <select name="setor"
+                        class="block w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-100 appearance-none">
+                        <option value="">Selecione um setor</option>
+                        <option value="RH">RH</option>
+                        <option value="Recepção">Recepção</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700">Solicitante</label>
+                    <input type="text" name="solicitante_id"
+                        class="block w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-100 appearance-none"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700">Data</label>
+                    <input type="date" name="data"
+                        class="block w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-100 appearance-none"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700">Hora Início</label>
+                    <input type="time" name="hora_inicio"
+                        class="block w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-100 appearance-none"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700">Hora Fim</label>
+                    <input type="time" name="hora_fim"
+                        class="block w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-100 appearance-none"
+                        required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="block text-sm font-medium text-gray-700">Descrição da Atividade</label>
+                <textarea name="descricao" rows="4"
+                    class="block w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-100 appearance-none"
+                    required></textarea>
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Salvar
+                    Atividade</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Listagem de Atividades -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-6">Atividades Registradas</h2>
+
+        <!-- Filtros -->
+        <div class="mb-6 bg-gray-50 p-4 rounded-lg">
+            <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Data Início</label>
+                    <input type="date" name="data_inicio" value="{{ data_inicio }}"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Data Fim</label>
+                    <input type="date" name="data_fim" value="{{ data_fim }}"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Setor</label>
+                    <select name="setor"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Todos</option>
+                        <option value="RH" {% if setor=='RH' %}selected{% endif %}>RH</option>
+                        <option value="Recepção" {% if setor=='Recepção' %}selected{% endif %}>Recepção</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button type="submit"
+                        class="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">Filtrar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabela -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Horário</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Atendente</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Setor
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Descrição</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for atividade in atividades.items %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ atividade.hora_inicio.strftime('%d/%m/%Y') }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ atividade.hora_inicio.strftime('%H:%M') }} - {{
+                            atividade.hora_fim.strftime('%H:%M') }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ atividade.atendente_nome }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ atividade.setor }}</td>
+                        <td class="px-6 py-4">{{ atividade.descricao }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <button onclick="editarAtividade('{{ atividade.id }}')"
+                                class="text-blue-600 hover:text-blue-900 mr-3">
+                                Editar
+                            </button>
+                            <button onclick="excluirAtividade('{{ atividade.id }}')"
+                                class="text-red-600 hover:text-red-900">
+                                Excluir
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginação -->
+        {% if atividades.pages > 1 %}
+        <div class="mt-4 flex justify-center">
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                {% if atividades.has_prev %}
+                <a href="{{ url_for('atividades.nova_atividade', page=atividades.prev_num) }}"
+                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">Anterior</a>
+                {% endif %}
+
+                {% for page_num in atividades.iter_pages() %}
+                {% if page_num %}
+                <a href="{{ url_for('atividades.nova_atividade', page=page_num) }}"
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium {% if page_num == atividades.page %}text-blue-600 bg-blue-50{% else %}text-gray-700 hover:bg-gray-50{% endif %}">{{
+                    page_num }}</a>
+                {% else %}
+                <span
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">...</span>
+                {% endif %}
+                {% endfor %}
+
+                {% if atividades.has_next %}
+                <a href="{{ url_for('atividades.nova_atividade', page=atividades.next_num) }}"
+                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">Próximo</a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function editarAtividade(id) {
+        window.location.href = `/atividades/editar/${id}`;
+    }
+
+    function excluirAtividade(id) {
+        if (confirm('Tem certeza que deseja excluir esta atividade?')) {
+            fetch(`/atividades/excluir/${id}`, {
+                method: 'DELETE',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Erro ao excluir atividade: ' + data.message);
+                    }
+                });
+        }
+    }
+</script>
+{% endblock %}
